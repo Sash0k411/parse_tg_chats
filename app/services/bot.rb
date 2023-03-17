@@ -56,7 +56,7 @@ class Bot
           puts 'Please, enter code from SMS:'
           code = STDIN.gets.strip
           client.check_authentication_code(code: code).wait
-          client.get_me.then { |user| @me = user }.rescue { |err| puts "error: #{err}" }.wait
+          client.get_me.rescue { |err| puts "error: #{err}" }.wait
         when :ready
           break
         end

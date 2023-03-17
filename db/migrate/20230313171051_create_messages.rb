@@ -5,7 +5,7 @@ class CreateMessages < ActiveRecord::Migration[7.0]
       t.integer :chat_id
       t.integer :sender_id
       t.datetime :datetime
-      t.text :text
+      t.json :text
       t.text :original_message
 
       t.timestamps

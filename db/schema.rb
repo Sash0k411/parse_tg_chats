@@ -19,7 +19,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_171051) do
     t.integer "chat_id"
     t.integer "sender_id"
     t.datetime "datetime"
-    t.text "text"
+    t.json "text"
     t.text "original_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
