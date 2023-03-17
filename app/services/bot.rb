@@ -10,7 +10,7 @@ TD.configure do |config|
   config.client.database_directory = ENV['TG_DB_PATH']
 end
 
-TD::Api.set_log_verbosity_level(4)
+TD::Api.set_log_verbosity_level(1)
 
 class Bot
   class << self
