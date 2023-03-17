@@ -10,7 +10,7 @@ TD.configure do |config|
   config.client.database_directory = ENV['TG_DB_PATH']
 end
 
-TD::Api.set_log_verbosity_level(1)
+TD::Api.set_log_verbosity_level(2)
 
 class Bot
   class << self
@@ -65,25 +65,49 @@ class Bot
     end
 
 
+    # def process(message)
+    #   message_id = message.id
+    #   chat_id = message.chat_id
+    #   sender_id = message.sender.user_id
+    #   datetime = Time.at(message.date)
+    #   text = message.content.text.text
+    #   original_message = message.to_json
+    #
+    #   Message.create!(
+    #     message_id: message_id,
+    #     chat_id: chat_id,
+    #     sender_id: sender_id,
+    #     datetime: datetime,
+    #     text: text,
+    #     original_message: original_message
+    #   )
+    # end
+
     def process(message)
+      sender = message.sender
 
+      if sender.is_a?(TD::Types::MessageSender::Chat)
+        message_id = message.id
+        chat_id = message.chat_id
+        datetime = Time.at(message.date)
+        original_message = message.to_json
 
-      message_id = message.id
-      chat_id = message.chat_id
-      sender_id = message.sender.user_id
-      datetime = Time.at(message.date)
-      text = message.content.text.text
-      original_message = message.to_json
+        if message.content.is_a?(TD::Types::MessageContent::Text)
+          text = message.content.text.text
+        elsif message.content.is_a?(TD::Types::MessageContent::Photo)
+          text = 'Photo'
+        else
+          text = 'Undefined format (video, voice, etc..)'
+        end
 
-      Message.create!(
-        message_id: message_id,
-        chat_id: chat_id,
-        sender_id: sender_id,
-        datetime: datetime,
-        text: text,
-        original_message: original_message
-      )
-
+        Message.create!(
+          message_id: message_id,
+          chat_id: chat_id,
+          datetime: datetime,
+          text: text,
+          original_message: original_message
+        )
+      end
     end
     private
   end
