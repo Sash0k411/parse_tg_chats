@@ -10,7 +10,7 @@ TD.configure do |config|
   config.client.database_directory = ENV['TG_DB_PATH']
 end
 
-TD::Api.set_log_verbosity_level(0)
+TD::Api.set_log_verbosity_level(1)
 
 class Bot
   class << self
@@ -49,10 +49,14 @@ class Bot
 
         case auth_state
         when :wait_phone_number
-          client.set_authentication_phone_number(phone_number: ENV['TG_PHONE'], settings: nil).wait
+          puts 'Please, enter your phone number:'
+          phone = ENV['TG_PHONE']
+          client.set_authentication_phone_number(phone_number: phone, settings: nil).wait
         when :wait_code
           puts 'Please, enter code from SMS:'
-          client.check_authentication_code(code: STDIN.gets.strip).wait
+          code = STDIN.gets.strip
+          client.check_authentication_code(code: code).wait
+          client.get_me.rescue { |err| puts "error: #{err}" }.wait
         when :ready
           break
         end
@@ -62,19 +66,25 @@ class Bot
 
 
     def process(message)
-      if message.content.is_a?(TD::Types::MessageContent::Text)
-        payload = {
-          id: message.id,
-          chat_id: message.chat_id,
-          sender_id: message.sender_user_id,
-          datetime: message.date,
-          text: begin message.content.text.text rescue nil end,
-          original: message.to_hash
-        }
-        Message::Save.call(payload)
-      end
-    end
 
+
+      message_id = message.id
+      chat_id = message.chat_id
+      sender_id = message.sender.user_id
+      datetime = Time.at(message.date)
+      text = message.content.text.text
+      original_message = message.to_json
+
+      Message.create!(
+        message_id: message_id,
+        chat_id: chat_id,
+        sender_id: sender_id,
+        datetime: datetime,
+        text: text,
+        original_message: original_message
+      )
+
+    end
     private
   end
 end
