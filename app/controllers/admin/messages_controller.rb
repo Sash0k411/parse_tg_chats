@@ -8,7 +8,7 @@ module Admin
     private
 
     def paginate(messages)
-      messages.order('created_at DESC').page(params[:page]).per(params[:per])
+      messages.order(created_at: :desc).page(params[:page])
     end
 
   end

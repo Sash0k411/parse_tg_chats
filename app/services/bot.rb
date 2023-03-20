@@ -64,25 +64,6 @@ class Bot
       end
     end
 
-
-    # def process(message)
-    #   message_id = message.id
-    #   chat_id = message.chat_id
-    #   sender_id = message.sender.user_id
-    #   datetime = Time.at(message.date)
-    #   text = message.content.text.text
-    #   original_message = message.to_json
-    #
-    #   Message.create!(
-    #     message_id: message_id,
-    #     chat_id: chat_id,
-    #     sender_id: sender_id,
-    #     datetime: datetime,
-    #     text: text,
-    #     original_message: original_message
-    #   )
-    # end
-
     def process(message)
       sender = message.sender
 
