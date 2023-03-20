@@ -16,8 +16,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_171051) do
 
   create_table "messages", force: :cascade do |t|
     t.string "message_id"
-    t.integer "chat_id"
-    t.integer "sender_id"
+    t.bigint "chat_id"
+    t.bigint "sender_id"
     t.datetime "datetime"
     t.json "text"
     t.text "original_message"

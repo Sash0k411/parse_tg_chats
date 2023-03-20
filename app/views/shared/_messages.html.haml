@@ -1,0 +1,19 @@
+%table.table.table-bordered
+  %thead.thead-light
+    %tr
+      %th Id
+      %th Message id
+      %th Chat id
+      %th Time
+      %th Text
+  %tbody
+    - @messages.each do |message|
+      %tr
+        %td= message.id
+        %td= message.message_id
+        %td= message.chat_id
+        %td= message.datetime.strftime('%H:%M')
+        %td= message.text
+
+= paginate @messages
+
