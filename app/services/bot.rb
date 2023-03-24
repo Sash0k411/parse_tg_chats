@@ -66,6 +66,9 @@ class Bot
     end
 
     def process(message)
+      sender_is_chat = message.chat_id.to_s
+      if sender_is_chat.include?('-100')
+
         message_id = message.id
         chat_id = message.chat_id
         user_id = message.sender.user_id
@@ -97,6 +100,7 @@ class Bot
           datetime: datetime,
           text: text.to_json
        )
+      end
     end
     private
   end
