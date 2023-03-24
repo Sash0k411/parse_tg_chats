@@ -1,3 +1,4 @@
+
 TD.configure do |config|
   config.lib_path = ENV['TG_LIB_PATH']
   config.client.api_id = ENV['TG_API_ID']
@@ -65,13 +66,10 @@ class Bot
     end
 
     def process(message)
-      sender = message.sender
-
-      if sender.is_a?(TD::Types::MessageSender::Chat)
         message_id = message.id
         chat_id = message.chat_id
+        user_id = message.sender.user_id
         datetime = Time.at(message.date)
-        original_message = message.to_json
 
         if message.content.is_a?(TD::Types::MessageContent::Text)
           text = message.content.text.text
@@ -81,14 +79,24 @@ class Bot
           text = 'Undefined format (video, voice, etc..)'
         end
 
-        Message.create!(
+        chat = Chat.find_by(chat_id: chat_id)
+        user = User.find_by(user_id: user_id)
+
+        if chat.nil?
+          chat = ChatDataUploader.new(message).save_chat_data
+        end
+
+        if user.nil?
+          user = UserDataUploader.new(message).save_user_data
+        end
+
+        chat.messages.create!(
           message_id: message_id,
-          chat_id: chat_id,
+          user_id: user.id,
+          chat_id: chat.id,
           datetime: datetime,
-          text: text,
-          original_message: original_message
-        )
-      end
+          text: text.to_json
+       )
     end
     private
   end
