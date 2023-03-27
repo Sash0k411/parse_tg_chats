@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 class Telegram::Chat::Create
   class << self

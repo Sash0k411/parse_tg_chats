@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 PUB_CHAT_PREFIX = '-100'
 
@@ -35,8 +36,6 @@ class Bot
                        :wait_password
                      when TD::Types::AuthorizationState::Ready
                        :ready
-                     else
-                       nil
                      end
       end
 
@@ -68,11 +67,13 @@ class Bot
     end
 
     def process(message, client)
-      if is_chat?(message)
-        Telegram::Message::Create.call(message, client)
-      end
+      return unless is_chat?(message)
+
+      Telegram::Message::Create.call(message, client)
     end
+
     private
+
     def is_chat?(message)
       sender_is_chat = message.chat_id.to_s
       sender_is_chat.include?(PUB_CHAT_PREFIX)
