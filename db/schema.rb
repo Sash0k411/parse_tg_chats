@@ -40,7 +40,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_074107) do
     t.string "last_name"
     t.string "username"
     t.string "phone_number"
-    t.string "user_type"
     t.json "profile_photo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

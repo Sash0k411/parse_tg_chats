@@ -1,4 +1,6 @@
 
+PUB_CHAT_PREFIX = '-100'
+
 TD.configure do |config|
   config.lib_path = ENV['TG_LIB_PATH']
   config.client.api_id = ENV['TG_API_ID']
@@ -39,7 +41,7 @@ class Bot
       end
 
       client.on(TD::Types::Update::NewMessage) do |update|
-        process(update.message)
+        process(update.message, client)
       end
 
       client.connect
@@ -65,43 +67,15 @@ class Bot
       end
     end
 
-    def process(message)
-      sender_is_chat = message.chat_id.to_s
-      if sender_is_chat.include?('-100')
-
-        message_id = message.id
-        chat_id = message.chat_id
-        user_id = message.sender.user_id
-        datetime = Time.at(message.date)
-
-        if message.content.is_a?(TD::Types::MessageContent::Text)
-          text = message.content.text.text
-        elsif message.content.is_a?(TD::Types::MessageContent::Photo)
-          text = 'Photo'
-        else
-          text = 'Undefined format (video, voice, etc..)'
-        end
-
-        chat = Chat.find_by(chat_id: chat_id)
-        user = User.find_by(user_id: user_id)
-
-        if chat.nil?
-          chat = ChatDataUploader.new(message).save_chat_data
-        end
-
-        if user.nil?
-          user = UserDataUploader.new(message).save_user_data
-        end
-
-        chat.messages.create!(
-          message_id: message_id,
-          user_id: user.id,
-          chat_id: chat.id,
-          datetime: datetime,
-          text: text.to_json
-       )
+    def process(message, client)
+      if is_chat?(message)
+        Telegram::Message::Create.call(message, client)
       end
     end
     private
+    def is_chat?(message)
+      sender_is_chat = message.chat_id.to_s
+      sender_is_chat.include?(PUB_CHAT_PREFIX)
+    end
   end
 end
