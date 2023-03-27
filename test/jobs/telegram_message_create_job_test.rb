@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class MessageTest < ActiveSupport::TestCase
+class TelegramMessageCreateJobTest < ActiveJob::TestCase
   # test "the truth" do
   #   assert true
   # end

@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+PUB_CHAT_PREFIX = '-100'
+
 TD.configure do |config|
   config.lib_path = ENV['TG_LIB_PATH']
   config.client.api_id = ENV['TG_API_ID']
@@ -32,13 +36,11 @@ class Bot
                        :wait_password
                      when TD::Types::AuthorizationState::Ready
                        :ready
-                     else
-                       nil
                      end
       end
 
       client.on(TD::Types::Update::NewMessage) do |update|
-        process(update.message)
+        process(update.message, client)
       end
 
       client.connect
@@ -64,32 +66,17 @@ class Bot
       end
     end
 
-    def process(message)
-      sender = message.sender
+    def process(message, client)
+      return unless is_chat?(message)
 
-      if sender.is_a?(TD::Types::MessageSender::Chat)
-        message_id = message.id
-        chat_id = message.chat_id
-        datetime = Time.at(message.date)
-        original_message = message.to_json
-
-        if message.content.is_a?(TD::Types::MessageContent::Text)
-          text = message.content.text.text
-        elsif message.content.is_a?(TD::Types::MessageContent::Photo)
-          text = 'Photo'
-        else
-          text = 'Undefined format (video, voice, etc..)'
-        end
-
-        Message.create!(
-          message_id: message_id,
-          chat_id: chat_id,
-          datetime: datetime,
-          text: text,
-          original_message: original_message
-        )
-      end
+      Telegram::Message::Create.call(message, client)
     end
+
     private
+
+    def is_chat?(message)
+      sender_is_chat = message.chat_id.to_s
+      sender_is_chat.include?(PUB_CHAT_PREFIX)
+    end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Admin
   class MessagesController < ApplicationController
     def index
@@ -10,6 +12,5 @@ module Admin
     def paginate(messages)
       messages.order(created_at: :desc).page(params[:page])
     end
-
   end
 end
