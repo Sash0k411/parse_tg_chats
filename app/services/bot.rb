@@ -69,14 +69,13 @@ class Bot
     def process(message, client)
       return unless is_chat?(message)
 
-      Telegram::Message::Create.call(message, client)
+      TelegramMessageCreateJob.perform_now(message, client)
     end
 
     private
 
     def is_chat?(message)
-      sender_is_chat = message.chat_id.to_s
-      sender_is_chat.include?(PUB_CHAT_PREFIX)
+      message.sender.user_id.present? && message.chat_id.to_s.include?(PUB_CHAT_PREFIX)
     end
   end
 end

@@ -6,6 +6,7 @@ class CreateMessages < ActiveRecord::Migration[7.0]
       t.bigint :message_id
       t.bigint :chat_id
       t.bigint :user_id
+      t.bigint :reply_to_message_id
       t.datetime :datetime
       t.json :text
 

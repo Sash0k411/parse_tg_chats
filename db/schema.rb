@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 20_230_324_074_107) do
     t.bigint 'message_id'
     t.bigint 'chat_id'
     t.bigint 'user_id'
+    t.bigint 'reply_to_message_id'
     t.datetime 'datetime'
     t.json 'text'
     t.datetime 'created_at', null: false
