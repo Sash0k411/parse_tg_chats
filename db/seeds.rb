@@ -6,3 +6,6 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
+
+TelegramTask.create!(title: :save_chat, status: :not_used)
+TelegramTask.create!(title: :save_user, status: :not_used)

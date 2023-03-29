@@ -2,7 +2,9 @@
 
 class Telegram::User::Create
   class << self
-    def call(user_id, client)
+    def call(user_id)
+      client = Bot.client
+
       client.get_user(user_id: user_id).then do |user_info|
         User.create!(
           user_id: user_info.id,
