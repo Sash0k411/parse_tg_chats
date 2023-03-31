@@ -38,6 +38,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_29_111712) do
   create_table "telegram_tasks", force: :cascade do |t|
     t.string "title"
     t.string "status"
+    t.json "input"
+    t.json "output"
+    t.string "service_class"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

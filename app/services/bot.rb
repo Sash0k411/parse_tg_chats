@@ -14,7 +14,7 @@ TD.configure do |config|
   config.client.database_directory = ENV['TG_DB_PATH']
 end
 
-TD::Api.set_log_verbosity_level(2)
+TD::Api.set_log_verbosity_level(1)
 
 class Bot
   class << self
@@ -69,8 +69,9 @@ class Bot
     def process(message)
       return unless is_chat?(message)
 
-      check_tasks(message)
-      Telegram::Message::CreateJob.perform_now(message)
+      update_command_data(message)
+      check_commands
+      Telegram::Message::CreateJob.perform_now(message) # message params to hash
     end
 
     private
@@ -79,34 +80,18 @@ class Bot
       message.sender.is_a?(TD::Types::MessageSender::User) && message.chat_id.to_s.include?(PUB_CHAT_PREFIX)
     end
 
-    def check_tasks(message)
-      TelegramTask.where(status: :not_used).find_each do |task|
-        process_tasks(task, message)
-      end
+    # Add chat_id, user_id to task input
+    def update_command_data(message)
+      Telegram::Task::Update.new(message).call
     end
 
-    def process_tasks(task, message)
-      chat_id = message.chat_id
-      user_id = message.sender.user_id
+    def check_commands
+      command_service = CommandLoop.new
 
-      task.update!(status: :in_progress)
-      begin
-        case task.title
-
-        when 'save_chat'
-          Telegram::Chat::CreateJob.perform_now(chat_id)
-          task.update(status: :processed)
-
-        when 'save_user'
-          Telegram::User::CreateJob.perform_now(user_id)
-          task.update(status: :processed)
-
-        end
-      rescue StandardError
-        task.update(status: :failed)
-      ensure
-        task.update(status: :not_used)
+      Telegram::Task.where(status: :not_used).find_each do |task|
+        command_service.process_task(task)
       end
     end
   end
 end
+

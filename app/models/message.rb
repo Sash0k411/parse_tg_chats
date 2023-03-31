@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 class Message < ApplicationRecord
-  belongs_to :chat
-  belongs_to :user
+  belongs_to :chat, optional: true
+  belongs_to :user, optional: true
 
   validates :message_id, uniqueness: true
-  validates :user, presence: true
-  validates :chat, presence: true
 end
