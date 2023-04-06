@@ -3,14 +3,14 @@
 class Telegram::Message::Create
   class << self
     def call(message)
-      message_id = message.id
+      message_id = message[:message_id]
 
-      chat_id = message.chat_id
-      user_id = message.sender.user_id if message.sender.is_a?(TD::Types::MessageSender::User)
+      chat_id = message[:chat_id]
+      user_id = message[:user_id] # if message.sender.is_a?(TD::Types::MessageSender::User)
 
-      datetime = Time.at(message.date)
-      text = message_text(message.content)
-      reply_to_message_id = message.reply_to_message_id
+      datetime = message[:datetime]
+      text = message[:text]
+      reply_to_message_id = message[:reply_to_message_id]
       chat = find_chat(chat_id)
       user = find_user(user_id)
 
