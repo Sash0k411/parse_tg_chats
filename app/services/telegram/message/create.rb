@@ -6,47 +6,36 @@ class Telegram::Message::Create
       message_id = message[:message_id]
 
       chat_id = message[:chat_id]
-      user_id = message[:user_id] # if message.sender.is_a?(TD::Types::MessageSender::User)
+      user_id = message[:user_id]
 
       datetime = message[:datetime]
       text = message[:text]
       reply_to_message_id = message[:reply_to_message_id]
-      chat = find_chat(chat_id)
-      user = find_user(user_id)
 
-      create_message(chat, user, message_id, datetime, text, reply_to_message_id)
+      sync_chat(chat_id)
+      sync_user(user_id)
+
+      create_message(chat_id, user_id, message_id, datetime, text, reply_to_message_id)
     end
 
     private
 
-    def message_text(content)
-      if content.is_a?(TD::Types::MessageContent::Text)
-        content.text.text
-      elsif content.is_a?(TD::Types::MessageContent::Photo)
-        'Photo'
-      else
-        'Undefined format (video, voice, etc..)'
-      end
+    def sync_chat(chat_id)
+      Telegram::Chat::CreateJob.perform_later(chat_id)
     end
 
-    def find_chat(chat_id)
-      Chat.find_by(chat_id: chat_id)
+    def sync_user(user_id)
+      Telegram::User::CreateJob.perform_later(user_id)
     end
 
-    def find_user(user_id)
-      User.find_by(user_id: user_id)
-    end
-
-    def create_message(chat, user, message_id, datetime, text, reply_to_message_id)
+    def create_message(chat_id, user_id, message_id, datetime, text, reply_to_message_id)
       Message.create!(
         message_id: message_id,
-        user_id: user.user_id,
-        chat_id: chat.chat_id,
+        user_id: user_id,
+        chat_id: chat_id,
         datetime: datetime,
         reply_to_message_id: reply_to_message_id,
-        text: text.to_json,
-        user: user,
-        chat: chat
+        text: text
       )
     end
   end

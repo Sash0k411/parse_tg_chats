@@ -4,21 +4,24 @@ PUB_CHAT_PREFIX = '-100'
 
 class Bot::Listener < Bot::Base
   class << self
-
     def listen
-      client_listen.connect
-      client_listen.on(TD::Types::Update::NewMessage) do |update|
+      current_client = client
+      current_client.connect
+      current_client.on(TD::Types::Update::NewMessage) do |update|
         process(update.message)
       end
+    end
+
+    def client
+      TD::Client.new(database_directory: ENV['TG_DB_PATH_LISTEN'],
+                     api_hash: ENV['TG_API_HASH_LISTEN'],
+                     api_id: ENV['TG_API_ID_LISTEN'])
     end
 
     def process(message)
       return unless is_chat?(message)
 
-      Telegram::User::CreateJob.perform_later(message.sender.user_id)
-      Telegram::Chat::CreateJob.perform_later(message.chat_id)
-
-      Telegram::Message::CreateJob.perform_later(message_data(message)) # message params to hash
+      Telegram::Message::CreateJob.perform_later(message_data(message))
     end
 
     private

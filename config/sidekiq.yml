@@ -13,11 +13,13 @@
 :queues:
   - critical
   - default
-  - <%= `hostname`.strip %>
-  - low
+  - listener
+  - parser
 
 # you can override concurrency based on environment
 production:
   :concurrency: 25
 staging:
   :concurrency: 15
+development:
+  :concurrency: 1

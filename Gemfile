@@ -27,7 +27,7 @@ gem 'tdlib-schema', '~> 1.7.0'
 
 gem 'dry-configurable', '0.13.0'
 
-gem 'dotenv-rails', groups: %i[development test]
+gem 'dotenv-rails', '~> 2.8', '>= 2.8.1'
 
 gem 'html2haml'
 
@@ -35,9 +35,12 @@ gem 'haml-rails', '~> 2.0'
 
 gem 'kaminari', '~> 1.2', '>= 1.2.2'
 
-gem 'rubocop', require: false
+gem 'rubocop', '~> 1.49'
 
-gem 'sidekiq', '~> 7.0', '>= 7.0.7'
+gem 'sidekiq', '~> 7.0', '>= 7.0.8'
+
+gem 'pry', '~> 0.14.2'
+gem 'pry-rails', group: :development
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
