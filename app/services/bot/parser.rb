@@ -10,7 +10,7 @@ class Bot::Parser < Bot::Base
         current_client.dispose
       end
     rescue StandardError => e
-      puts e
+      raise e
     end
 
     def client
