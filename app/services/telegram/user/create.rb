@@ -13,9 +13,9 @@ class Telegram::User::Create
             phone_number: user_info.phone_number,
             profile_photo: user_info.profile_photo.to_json
           )
+        end.rescue do |e|
+          raise e
         end
-      rescue StandardError => e
-        raise e
       end
     end
   end

@@ -6,18 +6,22 @@ class Bot::Parser < Bot::Base
       current_client = client
       current_client.connect.then do
         block.call(current_client)
-      ensure
         current_client.dispose
+      end.rescue do |e|
+        raise e
       end
-    rescue StandardError => e
-      raise e
     end
 
+    private
     def client
-      TD::Client.new(database_directory: ENV['TG_DB_PATH_PARSE'],
-                     api_hash: ENV['TG_API_HASH_PARSE'],
-                     api_id: ENV['TG_API_ID_PARSE'],
-                     lib_path: ENV['TG_LIB_PATH_PARSE'])
+      TD::Client.new(database_directory: ENV['TG_DB_PATH_PARSER'],
+                     api_hash: ENV['TG_API_HASH_PARSER'],
+                     api_id: ENV['TG_API_ID_PARSER'],
+                     lib_path: ENV['TG_LIB_PATH_PARSER'])
+    end
+
+    def telegram_phone
+      ENV['TG_PHONE_PARSER']
     end
   end
 end

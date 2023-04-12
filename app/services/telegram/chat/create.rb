@@ -11,11 +11,10 @@ class Telegram::Chat::Create
             photo: chat_info.photo.to_json,
             chat_type: chat_info.type.to_s
           )
+        end.rescue do |e|
+          raise e
         end
-      rescue StandardError => e
-        raise e
       end
     end
   end
 end
-# Telegram::Chat::CreateJob.new.perform(-1001356747835)

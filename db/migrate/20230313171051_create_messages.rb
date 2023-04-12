@@ -12,5 +12,10 @@ class CreateMessages < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
+
+    add_index :messages, :message_id
+    add_index :messages, :chat_id
+    add_index :messages, :user_id
+    add_index :messages, :reply_to_message_id
   end
 end

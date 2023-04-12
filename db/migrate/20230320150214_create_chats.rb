@@ -11,5 +11,8 @@ class CreateChats < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
+
+    add_index :chats, :chat_id
+    add_index :chats, :reply_markup_message_id
   end
 end

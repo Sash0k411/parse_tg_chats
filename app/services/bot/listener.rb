@@ -12,10 +12,16 @@ class Bot::Listener < Bot::Base
       end
     end
 
+    private
+
     def client
-      TD::Client.new(database_directory: ENV['TG_DB_PATH_LISTEN'],
-                     api_hash: ENV['TG_API_HASH_LISTEN'],
-                     api_id: ENV['TG_API_ID_LISTEN'])
+      TD::Client.new(database_directory: ENV['TG_DB_PATH_LISTENER'],
+                     api_hash: ENV['TG_API_HASH_LISTENER'],
+                     api_id: ENV['TG_API_ID_LISTENER'])
+    end
+
+    def telegram_phone
+      ENV['TG_PHONE_LISTENER']
     end
 
     def process(message)
@@ -23,8 +29,6 @@ class Bot::Listener < Bot::Base
 
       Telegram::Message::CreateJob.perform_later(message_data(message))
     end
-
-    private
 
     def is_chat?(message)
       message.sender.is_a?(TD::Types::MessageSender::User) && message.chat_id.to_s.include?(PUB_CHAT_PREFIX)

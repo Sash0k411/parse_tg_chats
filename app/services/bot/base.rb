@@ -9,7 +9,7 @@ TD.configure do |config|
   config.client.application_version = '0.1'
 end
 
-TD::Api.set_log_verbosity_level(0)
+TD::Api.set_log_verbosity_level(2)
 
 class Bot::Base
   class << self
@@ -41,7 +41,7 @@ class Bot::Base
         case auth_state
         when :wait_phone_number
           puts 'Please, enter your phone number:'
-          phone = $stdin.gets.strip
+          phone = telegram_phone
           current_client.set_authentication_phone_number(phone_number: phone, settings: nil).wait
         when :wait_code
           puts 'Please, enter code from SMS:'
