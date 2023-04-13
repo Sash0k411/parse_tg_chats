@@ -3,16 +3,13 @@
 class CreateChats < ActiveRecord::Migration[7.0]
   def change
     create_table :chats do |t|
-      t.bigint :chat_id
+      t.bigint :chat_id, index: true
       t.string :title
       t.string :chat_type
       t.string :photo
-      t.bigint :reply_markup_message_id
+      t.bigint :reply_markup_message_id, index: true
 
       t.timestamps
     end
-
-    add_index :chats, :chat_id
-    add_index :chats, :reply_markup_message_id
   end
 end

@@ -3,7 +3,6 @@
 class Telegram::Message::Create
   class << self
     def call(message)
-
       chat_id = message[:chat_id]
       user_id = message[:user_id]
 

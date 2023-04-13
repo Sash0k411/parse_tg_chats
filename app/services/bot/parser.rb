@@ -8,20 +8,19 @@ class Bot::Parser < Bot::Base
         block.call(current_client)
         current_client.dispose
       end.rescue do |e|
+        current_client.dispose
         raise e
       end
     end
 
     private
+
     def client
       TD::Client.new(database_directory: ENV['TG_DB_PATH_PARSER'],
                      api_hash: ENV['TG_API_HASH_PARSER'],
                      api_id: ENV['TG_API_ID_PARSER'],
-                     lib_path: ENV['TG_LIB_PATH_PARSER'])
-    end
-
-    def telegram_phone
-      ENV['TG_PHONE_PARSER']
+                     lib_path: ENV['TG_LIB_PATH_PARSER'],
+                     phone_number: ENV['TG_PHONE_PARSER'])
     end
   end
 end

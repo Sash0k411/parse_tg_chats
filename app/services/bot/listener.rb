@@ -17,11 +17,8 @@ class Bot::Listener < Bot::Base
     def client
       TD::Client.new(database_directory: ENV['TG_DB_PATH_LISTENER'],
                      api_hash: ENV['TG_API_HASH_LISTENER'],
-                     api_id: ENV['TG_API_ID_LISTENER'])
-    end
-
-    def telegram_phone
-      ENV['TG_PHONE_LISTENER']
+                     api_id: ENV['TG_API_ID_LISTENER'],
+                     phone_number: ENV['TG_PHONE_LISTENER'])
     end
 
     def process(message)
