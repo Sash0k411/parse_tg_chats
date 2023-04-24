@@ -2,46 +2,36 @@
 
 class Telegram::Message::Create
   class << self
-    def call(message, client)
-      message_id = message.id
-      chat_id = message.chat_id
-      user_id = message.sender.user_id
-      datetime = Time.at(message.date)
-      text = message_text(message.content)
+    def call(message)
+      chat_id = message[:chat_id]
+      user_id = message[:user_id]
 
-      chat = find_or_create_chat(chat_id, client)
-      user = find_or_create_user(user_id, client)
+      sync_chat(chat_id)
+      sync_user(user_id)
 
-      create_message(chat, user, message_id, datetime, text)
+      create_message(message)
     end
 
     private
 
-    def message_text(content)
-      if content.is_a?(TD::Types::MessageContent::Text)
-        content.text.text
-      elsif content.is_a?(TD::Types::MessageContent::Photo)
-        'Photo'
-      else
-        'Undefined format (video, voice, etc..)'
-      end
+    def sync_chat(chat_id)
+      chat = Chat.find_by(chat_id: chat_id)
+      Telegram::Chat::CreateJob.perform_later(chat_id) unless chat
     end
 
-    def find_or_create_chat(chat_id, client)
-      Chat.find_by(chat_id: chat_id) || Telegram::Chat::Create.call(chat_id, client)
+    def sync_user(user_id)
+      user = User.find_by(user_id: user_id)
+      Telegram::User::CreateJob.perform_later(user_id) unless user
     end
 
-    def find_or_create_user(user_id, client)
-      User.find_by(user_id: user_id) || Telegram::User::Create.call(user_id, client)
-    end
-
-    def create_message(chat, user, message_id, datetime, text)
-      chat.messages.create!(
-        message_id: message_id,
-        user_id: user.id,
-        chat_id: chat.id,
-        datetime: datetime,
-        text: text.to_json
+    def create_message(message)
+      Message.create!(
+        message_id: message[:message_id],
+        user_id: message[:user_id],
+        chat_id: message[:chat_id],
+        datetime: message[:datetime],
+        reply_to_message_id: message[:reply_to_message_id],
+        text: message[:text]
       )
     end
   end

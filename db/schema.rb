@@ -24,16 +24,23 @@ ActiveRecord::Schema[7.0].define(version: 20_230_324_074_107) do
     t.bigint 'reply_markup_message_id'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.index ['chat_id'], name: 'index_chats_on_chat_id'
+    t.index ['reply_markup_message_id'], name: 'index_chats_on_reply_markup_message_id'
   end
 
   create_table 'messages', force: :cascade do |t|
     t.bigint 'message_id'
     t.bigint 'chat_id'
     t.bigint 'user_id'
+    t.bigint 'reply_to_message_id'
     t.datetime 'datetime'
     t.json 'text'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.index ['chat_id'], name: 'index_messages_on_chat_id'
+    t.index ['message_id'], name: 'index_messages_on_message_id'
+    t.index ['reply_to_message_id'], name: 'index_messages_on_reply_to_message_id'
+    t.index ['user_id'], name: 'index_messages_on_user_id'
   end
 
   create_table 'users', force: :cascade do |t|
@@ -45,5 +52,6 @@ ActiveRecord::Schema[7.0].define(version: 20_230_324_074_107) do
     t.json 'profile_photo'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.index ['user_id'], name: 'index_users_on_user_id'
   end
 end

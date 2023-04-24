@@ -1,30 +1,23 @@
 # frozen_string_literal: true
 
-PUB_CHAT_PREFIX = '-100'
-
 TD.configure do |config|
   config.lib_path = ENV['TG_LIB_PATH']
-  config.client.api_id = ENV['TG_API_ID']
-  config.client.api_hash = ENV['TG_API_HASH']
   config.client.use_test_dc = false
   config.client.system_language_code = 'en'
   config.client.device_model = 'MACOS'
   config.client.system_version = '1'
   config.client.application_version = '0.1'
-  config.client.database_directory = ENV['TG_DB_PATH']
 end
 
-TD::Api.set_log_verbosity_level(2)
+TD::Api.set_log_verbosity_level(0)
 
-class Bot
+class Bot::Base
   class << self
-    def client
-      @@client ||= TD::Client.new
-    end
-
-    def listen
+    def authorize
+      current_client = client
       auth_state = nil
-      client.on(TD::Types::Update::AuthorizationState) do |update|
+
+      current_client.on(TD::Types::Update::AuthorizationState) do |update|
         puts update.authorization_state
 
         auth_state = case update.authorization_state
@@ -39,11 +32,7 @@ class Bot
                      end
       end
 
-      client.on(TD::Types::Update::NewMessage) do |update|
-        process(update.message, client)
-      end
-
-      client.connect
+      current_client.connect
 
       # Daemon
       loop do
@@ -52,31 +41,17 @@ class Bot
         case auth_state
         when :wait_phone_number
           puts 'Please, enter your phone number:'
-          phone = ENV['TG_PHONE']
-          client.set_authentication_phone_number(phone_number: phone, settings: nil).wait
+          phone = current_client.instance_variable_get(:@config)[:phone_number]
+          current_client.set_authentication_phone_number(phone_number: phone, settings: nil).wait
         when :wait_code
           puts 'Please, enter code from SMS:'
-          code = STDIN.gets.strip
-          client.check_authentication_code(code: code).wait
-          client.get_me.rescue { |err| puts "error: #{err}" }.wait
+          code = $stdin.gets.strip
+          current_client.check_authentication_code(code: code).wait
         when :ready
           break
         end
         sleep 2
       end
-    end
-
-    def process(message, client)
-      return unless is_chat?(message)
-
-      Telegram::Message::Create.call(message, client)
-    end
-
-    private
-
-    def is_chat?(message)
-      sender_is_chat = message.chat_id.to_s
-      sender_is_chat.include?(PUB_CHAT_PREFIX)
     end
   end
 end
